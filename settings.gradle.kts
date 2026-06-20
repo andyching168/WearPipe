@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-rootProject.name = "NewPipe"
+rootProject.name = "WearPipe"
 
 pluginManagement {
     repositories {
@@ -21,9 +21,7 @@ dependencyResolutionManagement {
         maven(url = "https://repo.clojars.org")
     }
 }
-include(":app") // androidApp
-include(":desktopApp")
-include("shared")
+include(":app")
 
 // Use a local copy of NewPipe Extractor by uncommenting the lines below.
 // We assume, that NewPipe and NewPipe Extractor have the same parent directory.

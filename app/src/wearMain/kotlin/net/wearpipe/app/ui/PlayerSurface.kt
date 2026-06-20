@@ -36,9 +36,16 @@ fun PlayerSurface(modifier: Modifier = Modifier) {
             MediaController.releaseFuture(future)
         }
     }
-    AndroidView(
-        modifier = modifier,
-        factory = { PlayerView(it).apply { useController = false } },
-        update = { it.player = controller }
-    )
+    if (controller != null) {
+        AndroidView(
+            modifier = modifier,
+            factory = { ctx ->
+                PlayerView(ctx).apply {
+                    useController = false
+                    player = controller
+                }
+            },
+            update = { it.player = controller }
+        )
+    }
 }

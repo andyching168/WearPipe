@@ -218,7 +218,7 @@ private fun SearchScreen(graph: AppGraph, initialQuery: String, openDetails: (Se
 @Composable
 private fun DetailsScreen(graph: AppGraph, serviceId: Int, url: String, openPlayer: () -> Unit) {
     val context = androidx.compose.ui.platform.LocalContext.current
-    val maxHeight = remember { context.getSharedPreferences("wearpipe", 0).getInt("max_video_height", 720) }
+    val maxHeight = remember { context.getSharedPreferences("wearpipe", 0).getInt("max_video_height", 240) }
     val scope = rememberCoroutineScope()
     var details by remember(url) { mutableStateOf<StreamDetails?>(null) }
     var error by remember(url) { mutableStateOf<String?>(null) }
@@ -280,7 +280,7 @@ private fun DetailsScreen(graph: AppGraph, serviceId: Int, url: String, openPlay
 @Composable
 private fun PlayerScreen(graph: AppGraph) {
     val context = androidx.compose.ui.platform.LocalContext.current
-    val maxHeight = remember { context.getSharedPreferences("wearpipe", 0).getInt("max_video_height", 720) }
+    val maxHeight = remember { context.getSharedPreferences("wearpipe", 0).getInt("max_video_height", 240) }
     val state by graph.playbackRepository.state.collectAsStateWithLifecycle()
     var displayedPosition by remember(state.positionMs) { mutableStateOf(state.positionMs) }
     var volume by remember { mutableFloatStateOf(0.7f) }
@@ -414,6 +414,11 @@ private fun PlayerScreen(graph: AppGraph) {
                         controlsVisible = true
                         scope.launch {
                             switching = true
+                            android.widget.Toast.makeText(
+                                context,
+                                context.getString(R.string.switching),
+                                android.widget.Toast.LENGTH_SHORT
+                            ).show()
                             graph.streamingRepository.getStream(0, source).onSuccess { details ->
                                 val media = if (state.video) graph.streamSelector.selectAudio(details)
                                 else graph.streamSelector.selectVideo(details, maxHeight)
@@ -426,8 +431,7 @@ private fun PlayerScreen(graph: AppGraph) {
                 ) {
                     Icon(
                         if (state.video) Icons.Default.AudioFile else Icons.Default.VideoFile,
-                        if (switching) stringResource(R.string.switching)
-                        else if (state.video) stringResource(R.string.switch_audio) else stringResource(R.string.switch_video)
+                        if (state.video) stringResource(R.string.switch_audio) else stringResource(R.string.switch_video)
                     )
                 }
             }
@@ -484,11 +488,11 @@ private fun HistoryScreen(graph: AppGraph, open: (PlaybackHistoryEntry) -> Unit)
 private fun SettingsScreen(graph: AppGraph) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val preferences = remember { context.getSharedPreferences("wearpipe", 0) }
-    var quality by remember { mutableStateOf(preferences.getInt("max_video_height", 720)) }
+    var quality by remember { mutableStateOf(preferences.getInt("max_video_height", 240)) }
     WearList {
         item { ScreenTitle(stringResource(R.string.settings)) }
         item { SectionLabel(stringResource(R.string.quality_limit)) }
-        listOf(360, 480, 720).forEach { value ->
+        listOf(144, 240).forEach { value ->
             item {
                 NavButton(if (quality == value) "✓ ${value}p" else "${value}p", Icons.Default.VideoFile) {
                     quality = value
